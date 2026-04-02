@@ -1,0 +1,68 @@
+public class FabricWeavingBeautyScore {
+    // As we can't follow greedy approach here in pairing, trying all possible pairs using dp
+    // For current array A, made dpA -> checking if its current value equal to last value
+    // If Yes -> so adding H in cost made till last value, else adding 0 in last value cost
+    // On the same point checking if array A cuurent value = array B current value. 
+    // If Yes ->  adding the H in cost made till last value of array B from dpB, else adding 0 in cost made till last value of array B
+    
+    // Doing same steps for array B
+    public static void main(String[] args){
+        int[] A = {1,2,1,1};
+        int[] B = {1,2,3,1,1};
+        int n = A.length;
+        int m = B.length;
+        int H = 4;
+
+        int[][] dpA = new int[n+1][m+1];
+        int[][] dpB = new int[n+1][m+1];
+
+        for(int i=0; i<=n; i++){
+            for(int j=0; j<=m; j++){
+
+                // Steps for array A
+                if(i > 0){
+                    // in array A -> last = cur 
+                    if(i > 1){
+                        dpA[i][j] = Math.max(dpA[i][j],
+                            dpA[i-1][j] + (A[i-1] == A[i-2] ? H : 0));
+                    }
+                    // curr array A = curr array B
+                    if(j > 0){
+                        dpA[i][j] = Math.max(dpA[i][j],
+                            dpB[i-1][j] + (A[i-1] == B[j-1] ? H : 0));
+                    }
+                }
+
+                // Steps for array B
+                if(j > 0){
+                    // in array B -> last = cur 
+                    if(j > 1){
+                        dpB[i][j] = Math.max(dpB[i][j],
+                            dpB[i][j-1] + (B[j-1] == B[j-2] ? H : 0));
+                    }
+                    // curr array B = curr array A
+                    if(i > 0){
+                        dpB[i][j] = Math.max(dpB[i][j],
+                            dpA[i][j-1] + (B[j-1] == A[i-1] ? H : 0));
+                    }
+                }
+            }
+        }
+
+        for(int i=0; i<=n; i++){
+            for(int j=0; j<=m; j++){
+                System.out.print(dpA[i][j] + " ");
+            }
+            System.out.println();
+        }
+        
+        System.out.println();
+        for(int i=0; i<=n; i++){
+            for(int j=0; j<=m; j++){
+                System.out.print(dpB[i][j] + " ");
+            }
+            System.out.println();
+        }
+        System.out.println(Math.max(dpA[n][m], dpB[n][m]));
+    }
+}
