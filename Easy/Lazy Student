@@ -1,0 +1,41 @@
+import java.util.*;
+public class LazyStudent {
+    public static void main(String[] args) {
+        // int[] arr = {7,8};
+        int[] arr = {10,5,8};
+        int n = arr.length;
+        int m = 4;
+        int c = 2;
+
+        double total = 0;
+        // checking for choices
+        for(int i=0; i<n; i++){
+            total += (double) (arr[i]/c);
+        }
+
+        if(total >= m){
+            System.out.println(0);
+            return;
+        }
+        
+
+        // checking for thinking by adding the rest marks which we left in choice
+        // in order to get minimum thinking starting with highest marks
+        Arrays.sort(arr);
+        for(int i=0; i<arr.length/2; i++){
+            int temp = arr[i];
+            arr[i] = arr[arr.length-i-1];
+            arr[arr.length-i-1] = temp;
+        }
+        int count = 0;
+        for(int i=0; i<n; i++){
+            double remain = arr[i] - (double)(arr[i]/c);
+            total += remain;
+            count++;
+            if(total >= m){
+                System.out.println(count);
+                break;
+            }
+        }
+    }
+}
