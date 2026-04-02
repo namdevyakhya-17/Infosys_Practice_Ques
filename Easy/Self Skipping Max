@@ -1,0 +1,16 @@
+public class SelfSkippingMax {
+    public static void main(String[] args) {
+        int[] arr = {1,1,1,1,1};
+        int n = arr.length;
+        int[] dp = new int[n];
+
+        dp[n-1] = arr[n-1];
+        for(int i=n-2; i>=0; i--){
+            int nextIdx = (i+arr[i]+1);
+            int next = (nextIdx) > n-1 ? 0 : dp[nextIdx];
+            dp[i] = Math.max(arr[i]+next, dp[i+1]);
+        }
+
+        System.out.println(dp[0]);
+    }
+}
