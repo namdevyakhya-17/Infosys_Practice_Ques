@@ -1,0 +1,51 @@
+import java.util.*;
+
+public class DualTimeline {
+    public static long minPenalty(int[] D, int[] P, int N) {
+        int sumD = 0;
+        for (int d : D) sumD += d;
+        //min penalty
+        long[] dp = new long[sumD + 1];
+        Arrays.fill(dp, Long.MAX_VALUE);
+        dp[0] = 0;
+
+        int prefixSum = 0; // sum of durations till i-1
+        for (int i = 0; i < N; i++) {
+            int d = D[i];
+            int p = P[i];
+            long[] newDp = new long[sumD + 1];
+            Arrays.fill(newDp, Long.MAX_VALUE);
+            for (int tA = 0; tA <= prefixSum; tA++) {
+                if (dp[tA] == Long.MAX_VALUE) continue;
+
+                int tB = prefixSum - tA;
+                // Assign to Team A
+                int newTA = tA + d;
+                long costA = dp[tA] + (long)(tA + d) * p;
+                newDp[newTA] = Math.min(newDp[newTA], costA);
+
+                // Assign to Team B
+                long costB = dp[tA] + (long)(tB + d) * p;
+                newDp[tA] = Math.min(newDp[tA], costB);
+            }
+
+            dp = newDp;
+            prefixSum += d;
+        }
+
+        long ans = Long.MAX_VALUE;
+        for (long val : dp) {
+            ans = Math.min(ans, val);
+        }
+
+        return ans;
+    }
+
+    public static void main(String[] args) {
+        int[] D = {2, 1, 3};
+        int[] P = {4, 2, 1};
+        int N = 3;
+
+        System.out.println(minPenalty(D, P, N));
+    }
+}
