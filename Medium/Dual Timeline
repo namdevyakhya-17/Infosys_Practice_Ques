@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class DualTimeline {
+public class Solution {
     public static long minPenalty(int[] D, int[] P, int N) {
         int sumD = 0;
         for (int d : D) sumD += d;
@@ -11,27 +11,33 @@ public class DualTimeline {
 
         int prefixSum = 0; // sum of durations till i-1
         for (int i = 0; i < N; i++) {
+            System.out.println(i + " dp:  " + Arrays.toString(dp));
             int d = D[i];
             int p = P[i];
             long[] newDp = new long[sumD + 1];
             Arrays.fill(newDp, Long.MAX_VALUE);
             for (int tA = 0; tA <= prefixSum; tA++) {
                 if (dp[tA] == Long.MAX_VALUE) continue;
-
                 int tB = prefixSum - tA;
-                // Assign to Team A
+
+                // dp[tA] = penalty accumulated so far
+                // tA = current total time of Team A
+
+                // Assign current task to Team A
                 int newTA = tA + d;
                 long costA = dp[tA] + (long)(tA + d) * p;
                 newDp[newTA] = Math.min(newDp[newTA], costA);
 
-                // Assign to Team B
+                // Assign current task to Team B
+                // tB is current time of Team B
                 long costB = dp[tA] + (long)(tB + d) * p;
                 newDp[tA] = Math.min(newDp[tA], costB);
             }
-
+            System.out.println(i + " newdp:  " + Arrays.toString(newDp));
             dp = newDp;
             prefixSum += d;
         }
+
 
         long ans = Long.MAX_VALUE;
         for (long val : dp) {
