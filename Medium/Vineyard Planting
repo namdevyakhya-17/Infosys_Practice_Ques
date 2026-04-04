@@ -1,0 +1,31 @@
+import java.util.*;
+public class VineyardPlanting {
+    public static void main(String[] args) {
+        int[][] V = {{6,0,5},
+                     {0,10,13},
+                     {5,5,6}};
+
+        int n = V.length;
+        int m = V[0].length;
+        int costA = 30;
+        int costB = 10;
+        long cost = 0;
+
+        for(int i=0; i<n; i++){
+            long[] dp = new long[m+1];
+            Arrays.fill(dp, Long.MAX_VALUE);
+            dp[0] = 0;
+            for(int j=1; j<=m; j++){
+                // Trying to fit Type A tile
+                dp[j] = Math.min(dp[j], dp[j-1]+(costA-V[i][j-1]));
+                // Trying to fit type B tile
+                if(j>1){
+                    dp[j] = Math.min(dp[j], dp[j-2]+costB);
+                }
+            }
+            System.out.println(Arrays.toString(dp));
+            cost += dp[m];
+        }
+        System.out.println(cost);
+    }
+}
