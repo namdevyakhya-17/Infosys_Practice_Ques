@@ -1,0 +1,47 @@
+import java.util.*;
+public class TotalRentMaximization {
+    public static void main(String[] args){
+        int k = 2;
+        int[] P = {2,3,4};
+        int[] R = {1,2,3};
+        // int k = 1;
+        // int[] P = {33,39,2,36,13};
+        // int[] R = {46,42,45,32,27,15};
+        int n = P.length;
+        int m = R.length;
+        Arrays.sort(P);
+        
+        TreeMap<Integer, Integer> tools = new TreeMap<>();
+        for(int i=0; i<m; i++){
+            tools.put(R[i], tools.getOrDefault(R[i],0)+1);
+        }
+
+        int count = 0;
+        // process strongest customer first
+        for(int i=n-1; i>=0; i--){
+            int need = P[i];
+            
+            // direct tool
+            Integer tool = tools.ceilingKey(need);
+            if(tool != null){
+                tools.put(tool, tools.get(tool)-1);
+                if(tools.get(tool) == 0) tools.remove(tool);
+                count++;
+                continue;
+            }
+
+            // amplified tool
+            if(k > 0){
+                need = (P[i]+1)/2;
+                tool = tools.ceilingKey(need);
+                if(tool != null){
+                    tools.put(tool, tools.get(tool)-1);
+                    if(tools.get(tool) == 0) tools.remove(tool);
+                    count++;
+                    k--;
+                }
+            }
+        }
+        System.out.println(count);
+    }
+}
