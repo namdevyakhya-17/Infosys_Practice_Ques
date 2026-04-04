@@ -1,0 +1,106 @@
+import java.util.*;
+public class RecamanQueries {
+    static int[] seg;
+    static int max = 1000000;
+    static int steps = 5000;
+    public static void build(int idx, int l, int r, int[] arr){
+        if(l == r){
+            seg[idx] = arr[l];
+            return;
+        }
+
+        int mid = (l+r) >> 1;
+        build(2*idx+1, l, mid, arr);
+        build(2*idx+2, mid+1, r, arr);
+        seg[idx] = Math.max(seg[2*idx+1], seg[2*idx+2]);
+    }
+
+    public static int query(int idx, int l, int r, int qs, int qe){
+        if(qe < l || qs > r) return Integer.MIN_VALUE;
+        if(qs <= l && r <= qe){
+            return seg[idx];
+        }
+        int mid = (l+r) >> 1;
+        return Math.max(query(2*idx+1, l, mid, qs, qe), query(2*idx+2, mid+1, r, qs, qe));
+    }
+
+    public static void update(int idx, int l, int r, int i, int val){
+        if(l == r){
+            seg[idx] = val;
+            return;
+        }
+
+        int mid = (l+r) >> 1;
+        if(i <= mid){
+            update(2*idx+1, l, mid, i, val);
+        }else{
+            update(2*idx+2, mid+1, r, i, val);
+        }
+        seg[idx] = Math.max(seg[2*idx+1], seg[2*idx+2]);
+    }
+
+    static Map<Integer, Integer> map = new HashMap<>();
+    static HashSet<Integer> fortunate = new HashSet<>(Arrays.asList(
+        3, 5, 7, 13, 23, 17, 19, 37,
+        61, 67, 71, 47, 107, 59,
+        109, 89, 103, 79
+    ));
+    public static int recman(int ans){
+        if(map.containsKey(ans)) return map.get(ans);
+
+        Set<Integer> visited = new HashSet<>();
+        int curr = ans;
+        visited.add(curr);
+        int step = 0;
+        for(int n=1; n<=steps; n++){
+            int nextVal = curr - n;
+            int next;
+
+            if(nextVal > 0 && !visited.contains(nextVal)){
+                next = nextVal;
+            }else{
+                next = curr+n;
+            }
+
+            step++;
+            if(visited.contains(next) || next > max){
+                break;
+            }
+            visited.add(next);
+            curr = next;
+        }
+
+        int mul = fortunate.contains(ans) ? 17 : 1;
+        int score = step * mul;
+        map.put(ans, score);
+        return score;
+    }
+    public static void main(String[] args) {
+        int[] arr = {7373, 5968, 3638, 47, 6985, 8219, 59, 8319, 9100, 9750};
+        int n = arr.length;
+        int[][] queries = {{0,6,8951},
+                            {1,1,7},
+                            {1,2,5},
+                            {1,6,8},
+                            {0,4,2190},
+                            {1,2,6}};
+
+        int cost = 0;
+        seg = new int[4*n];
+        build(0, 0, n-1, arr);
+        for(int[] qu : queries){
+            int type = (int)qu[0];
+            if(type == 0){
+                int i = (int)qu[1];
+                int val = qu[2];
+                update(0, 0, n-1, i, val);
+            }else{
+                int l = qu[1];
+                int r = qu[2];
+                int ans = query(0, 0, n-1, l, r);
+                cost += recman(ans);
+            }
+        }
+        System.out.println(cost);
+    }
+}
