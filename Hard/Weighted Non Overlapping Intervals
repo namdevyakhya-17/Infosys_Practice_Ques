@@ -1,0 +1,58 @@
+import java.util.*;
+public class WeightedNonOverlappingIntervals {
+    public static int binarySearch(int[][] intervals, int cur){
+        int low = 0;
+        int high = cur-1;
+        while(low <= high){
+            int mid = low + (high-low)/2;
+            if(intervals[mid][1] < intervals[cur][0]){
+                if(mid+1 <= high && intervals[mid+1][1] < intervals[cur][0]){
+                    low = mid+1;
+                }else{
+                    return mid;
+                }
+            }else{
+                high = mid-1;
+            }
+        }
+        return -1;
+    }
+    public static void main(String[] args) {
+        int[][] intervals = {{2,5,15},
+                             {9,13,6},
+                             {38,38,2},
+                             {6,9,33},
+                             {39,39,46},
+                             {42,55,15}};
+        int n = intervals.length;
+        int k = 4;
+        Arrays.sort(intervals, (a,b)-> Integer.compare(a[1], b[1]));
+
+        // calculating last non-overlapping index
+        int[] prev = new int[n];
+        for(int i=0; i<n; i++){
+            prev[i] = binarySearch(intervals, i);
+        }
+
+        // finding max k non-overlapping intervals cost
+        int[] dp = new int[k+1];
+        Arrays.fill(dp, Integer.MIN_VALUE);
+        dp[0] = 0;
+        for(int i=0; i<n; i++){
+            int[] newDp = dp.clone();
+            for(int j=1; j<=k; j++){
+                if(dp[j-1] != Integer.MIN_VALUE){
+                    int val = intervals[i][2];
+                    if(prev[i] != -1){
+                        val += dp[j-1];
+                    }
+                    newDp[j]= Math.max(newDp[j], val);
+                }
+            }
+            System.out.println(Arrays.toString(newDp));
+            dp = newDp;
+        }
+        int ans = dp[k];
+        System.out.println(ans < 0 ? -1 : ans);
+    }
+}
